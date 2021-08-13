@@ -25,6 +25,7 @@ import (
 
 func main() {
 	sc := bufio.NewScanner(os.Stdin)
+
 	for sc.Scan() {
 		data := sc.Text()
 		fmt.Println(data, " -> ", Request(data))
