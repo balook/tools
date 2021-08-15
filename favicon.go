@@ -14,7 +14,6 @@ import (
 func main() {
 
 	stat, _ := os.Stdin.Stat()
-
 	if len(os.Args) == 2 {
 		data := os.Args[1]
 		request(data)
@@ -27,7 +26,6 @@ func main() {
 		os.Exit(0)
 	}
 }
-
 
 func request(input string) {
 	response, err := http.Get(input)
@@ -54,7 +52,7 @@ func request(input string) {
 	str = final + last
 
 	if err != nil {
-		log.Fatal("error",err)
+		log.Fatal("error", err)
 	}
 
 	result := murmur3.Sum32([]byte(str))
