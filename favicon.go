@@ -28,6 +28,7 @@ func main() {
 	}
 }
 
+
 func request(input string) {
 	response, err := http.Get(input)
 	defer response.Body.Close()
@@ -53,11 +54,10 @@ func request(input string) {
 	str = final + last
 
 	if err != nil {
-		log.Fatal("error")
+		log.Fatal("error",err)
 	}
 
 	result := murmur3.Sum32([]byte(str))
-
 	fmt.Println(input, "->", result)
 
 }
