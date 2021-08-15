@@ -1,16 +1,3 @@
-/*
-============= Usage ===========
-urls.txt => list of favicon.txt urls
-cat urls.txt | go run favicon.
-
-Run :-
-	go get github.com/spaolacci/murmur3
-
-credits @sw33tlie
-my twitter => @prob0x01
-==============================
-*/
-
 package main
 
 import (
@@ -18,23 +5,40 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+
 	"github.com/twmb/murmur3"
 )
 
 func main() {
-	sc := bufio.NewScanner(os.Stdin)
 
-	for sc.Scan() {
-		data := sc.Text()
-		fmt.Println(data, " -> ", Request(data))
+	stat, _ := os.Stdin.Stat()
+
+	// if (stat.Mode() & os.ModeCharDevice) == 0 {
+	// 	fmt.Println("data is being piped to stdin")
+	// } else {
+	// 	fmt.Println("stdin is from a terminal")
+	// }
+
+	if len(os.Args) == 2 {
+		data := os.Args[1]
+		request(data)
+	} else if (stat.Mode() & os.ModeCharDevice) == 0 {
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			request(scanner.Text())
+		}
+	} else {
+		os.Exit(0)
 	}
 }
 
-func Request(data string) uint32 {
-	response, _ := http.Get(data)
-	body, _ := ioutil.ReadAll(response.Body)
+func request(input string) {
+	response, err := http.Get(input)
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
 	str := base64.StdEncoding.EncodeToString(body)
 
 	final := ""
@@ -55,5 +59,12 @@ func Request(data string) uint32 {
 
 	str = final + last
 
-	return murmur3.Sum32([]byte(str))
+	if err != nil {
+		log.Fatal("error")
+	}
+
+	result := murmur3.Sum32([]byte(str))
+
+	fmt.Println(input, "->", result)
+
 }
